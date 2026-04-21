@@ -65,14 +65,33 @@ public class Main
             BufferedWriter bufWriter = new BufferedWriter(writer);
 
             String text;
-            bufWriter.write("id|name|gross pay\n");
+            if (fileDestination.endsWith(".csv")) {
+                bufWriter.write("id|name|gross pay\n");
 
-            for (Employee emp: employees)
+                for (Employee emp : employees) {
+                    text = String.format("%d|%s|%.2f\n", emp.getEmployeeId(), emp.getName(), emp.getGrossPay());
+                    bufWriter.write(text);
+                }
+                bufWriter.close();
+            } else if (fileDestination.endsWith(".json"))
             {
-                text = String.format("%d|%s|%.2f\n", emp.getEmployeeId(), emp.getName(), emp.getGrossPay());
-                bufWriter.write(text);
+                bufWriter.write("[\n");
+                int lengthOfEmployeeArr = 1;
+                for (Employee emp: employees)
+                {
+                    if (lengthOfEmployeeArr == employees.length)
+                    {
+                        text = String.format("\t{ \"id\": %d, \"name\"  :  \"%s\", \"grossPay\"  :  \"%.2f\" }\n", emp.getEmployeeId(), emp.getName(), emp.getGrossPay());
+                        bufWriter.write(text);
+                        break;
+                    }
+                    text = String.format("\t{ \"id\": %d, \"name\"  :  \"%s\", \"grossPay\"  :  \"%.2f\" },\n", emp.getEmployeeId(), emp.getName(), emp.getGrossPay());
+                    bufWriter.write(text);
+                    lengthOfEmployeeArr++;
+                }
+                bufWriter.write("]");
+                bufWriter.close();
             }
-            bufWriter.close();
         }
         catch(IOException e)
         {
